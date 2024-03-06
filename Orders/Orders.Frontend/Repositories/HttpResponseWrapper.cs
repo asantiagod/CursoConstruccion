@@ -1,6 +1,5 @@
 ﻿using System.Net;
 
-
 namespace Orders.Frontend.Repositories
 {
     public class HttpResponseWrapper<T>
@@ -15,11 +14,11 @@ namespace Orders.Frontend.Repositories
             HttpResponseMessage = httpResponseMessage;
         }
 
-        public T? Response { get;}
-        public bool Error { get;}
-        public HttpResponseMessage HttpResponseMessage { get;}
+        public T? Response { get; }
+        public bool Error { get; }
+        public HttpResponseMessage HttpResponseMessage { get; }
 
-        public async Task<string?>GetErrorAsync()
+        public async Task<string?> GetErrorAsync()
         {
             if (!Error)
                 return null;
@@ -27,7 +26,7 @@ namespace Orders.Frontend.Repositories
             var statusCode = HttpResponseMessage.StatusCode;
             if (statusCode == HttpStatusCode.NotFound)
                 return "Recurso no encontrado.";
-            if(statusCode == HttpStatusCode.BadRequest)
+            if (statusCode == HttpStatusCode.BadRequest)
                 return await HttpResponseMessage.Content.ReadAsStringAsync();
             if (statusCode == HttpStatusCode.Unauthorized)
                 return "tienes que estar logueado para ejecutar esta operación.";

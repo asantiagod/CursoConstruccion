@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
 
 namespace Orders.Frontend.Repositories
 {
@@ -28,11 +29,27 @@ namespace Orders.Frontend.Repositories
             return new HttpResponseWrapper<T>(default, true, responseHttp);
         }
 
-        public Task<HttpResponseWrapper<object>> PostAsync<T>(string url, T model)
-        { }
+        public async Task<HttpResponseWrapper<object>> PostAsync<T>(string url, T model)
+        {
+            var messageJson = JsonSerializer.Serialize(model);
+            var messageContent = new StringContent(messageJson, Encoding.UTF8, "application/json");
+            var responseHttp = await _httpClient.PostAsync(url, messageContent);
+            return new HttpResponseWrapper<object>(null,!responseHttp.IsSuccessStatusCode, responseHttp);
+        }
 
-        public Task<HttpResponseWrapper<TActionResponse>> PostAsync<T, TActionResponse>(string url, T model)
-        { }
+        public async Task<HttpResponseWrapper<TActionResponse>> PostAsync<T, TActionResponse>(string url, T model)
+        {
+            var messageJson = JsonSerializer.Serialize(model);
+            var messageContent = new StringContent(messageJson, Encoding.UTF8, "application/json");
+            var responseHttp = await _httpClient.PostAsync(url,messageContent);
+            if(responseHttp.IsSuccessStatusCode)
+            {
+                var response = await UnserializeAnswer<TActionResponse>(responseHttp);
+                return new HttpResponseWrapper<TActionResponse>(response, false, responseHttp);
+            }
+
+            return new HttpResponseWrapper<TActionResponse>(default, true, responseHttp);
+        }
 
         private async Task<T> UnserializeAnswer<T>(HttpResponseMessage responseHttp)
         {

@@ -23,13 +23,13 @@ namespace Orders.Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            return Ok(await _context.Countries.ToListAsync());
+            return Ok(await _context.Countries.AsNoTracking().ToListAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync(int id)
         {
-            var country = await _context.Countries.FirstOrDefaultAsync(c => c.Id == id);
+            var country = await _context.Countries.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
             if(country == null)
             {
                 return NotFound();
